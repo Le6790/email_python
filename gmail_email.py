@@ -15,7 +15,7 @@ SCOPES = ['https://www.googleapis.com/auth/gmail.send',
           'https://www.googleapis.com/auth/gmail.labels',
           'https://www.googleapis.com/auth/gmail.compose']
 
-class gmail_email:
+class GmailEmail:
     def __init__(self):
         
         self.creds = self._get_creds()
@@ -53,3 +53,17 @@ class gmail_email:
 
         return labels
     
+    def send_text_email(self, to_email, from_email, subject, message):
+        msg = MIMEText(message)
+
+        msg["subject"] = subject
+        msg["From"] = from_email
+        msg["To"] = to_email
+        
+        raw = base64.urlsafe_b64encode(msg.as_bytes())
+        raw= raw.decode()
+        body = {'raw':raw}
+
+        msg = (self.service.users().messages().send(userId='me', body=body).execute())
+        print(msg)
+
